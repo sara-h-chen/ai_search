@@ -1,5 +1,5 @@
 import re, queue
-import sys
+import sys, os
 
 ######################################################################
 #                 PRE-PROCESS DATA GIVEN IN TOUR                     #
@@ -48,7 +48,10 @@ def get_current_node(row, col, matx):
 ######################################################################
 
 if __name__ == '__main__':
-    queue = read_file(sys.argv[1:])
+    fileName = sys.argv[1:]
+    dir_path = os.path.dirname(os.path.dirname(__file__))
+    dir = os.path.join(dir_path + 'input/' + str(fileName[0]))
+    queue = read_file(dir)
     citiesNo = next_number(queue)
     matrix = [[0 for x in range(citiesNo)] for y in range(citiesNo)]
     populate_matrix(citiesNo, queue, matrix)
