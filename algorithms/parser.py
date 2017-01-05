@@ -43,17 +43,29 @@ def get_current_node(row, col, matx):
     return matx[row][col]
 
 
+def get_input_files():
+    # GETS THE FOLDER WITH ALL INPUT FILES
+    dir_path = os.path.abspath(os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), 'input'))
+
+    # LISTS ALL THE FILES IN THE FOLDER
+    allFiles = [f for f in os.listdir(dir_path) if os.path.isfile(os.path.join(dir_path, f))]
+
+    return allFiles
+
+
 ######################################################################
 #                         MAIN METHOD                                #
 ######################################################################
 
 if __name__ == '__main__':
-    fileName = sys.argv[1:]
-    dir_path = os.path.dirname(os.path.dirname(__file__))
-    dir = os.path.join(dir_path + 'input/' + str(fileName[0]))
-    queue = read_file(dir)
-    citiesNo = next_number(queue)
-    matrix = [[0 for x in range(citiesNo)] for y in range(citiesNo)]
-    populate_matrix(citiesNo, queue, matrix)
-    for i in range(0, len(matrix[0])):
-        print(matrix[i])
+    dir_path = os.path.abspath(os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), 'input'))
+    inputFiles = get_input_files()
+
+    for file in inputFiles:
+        dir = os.path.join(dir_path, file)
+        queue = read_file(dir)
+        citiesNo = next_number(queue)
+        matrix = [[0 for x in range(citiesNo)] for y in range(citiesNo)]
+        populate_matrix(citiesNo, queue, matrix)
+        for i in range(0, len(matrix[0])):
+            print(matrix[i])
