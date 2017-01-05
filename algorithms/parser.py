@@ -57,15 +57,16 @@ def get_input_files():
 #                         MAIN METHOD                                #
 ######################################################################
 
-if __name__ == '__main__':
-    dir_path = os.path.abspath(os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), 'input'))
-    inputFiles = get_input_files()
-
-    for file in inputFiles:
-        dir = os.path.join(dir_path, file)
-        queue = read_file(dir)
-        citiesNo = next_number(queue)
-        matrix = [[0 for x in range(citiesNo)] for y in range(citiesNo)]
-        populate_matrix(citiesNo, queue, matrix)
-        for i in range(0, len(matrix[0])):
-            print(matrix[i])
+# UNCOMMENT ONLY WHEN TESTING
+# if __name__ == '__main__':
+#     dir_path = os.path.abspath(os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), 'input'))
+#     inputFiles = get_input_files()
+#
+#     for file in inputFiles:
+#         dir = os.path.join(dir_path, file)
+#         queue = read_file(dir)
+#         citiesNo = next_number(queue)
+#         matrix = [[0 for x in range(citiesNo)] for y in range(citiesNo)]
+#         populate_matrix(citiesNo, queue, matrix)
+#         for i in range(0, len(matrix[0])):
+#             print(matrix[i])

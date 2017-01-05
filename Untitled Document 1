@@ -1,0 +1,13 @@
+### ANT COLONY OPTIMIZATION ###
+
+        if (this._type == 'maxmin') {
+            for (var edgeIndex in edges) {
+                var pheromone = edges[edgeIndex].getPheromone();
+                if (pheromone > this._maxPheromone) {
+                    edges[edgeIndex].setPheromone(this._maxPheromone);
+                } else if (pheromone < this._minPheromone) {
+                    edges[edgeIndex].setPheromone(this._minPheromone);
+                }
+            }
+        }
+
