@@ -18,10 +18,10 @@ class environment:
         """ colonySize gets replaced with number of cities; yields a quicker solution """
         self.colonySize = citiesNo
         # THE WEIGHT OF THE EDGES WITH PHEROMONES
-        self.pheromoneWeight = (1/citiesNo)
+        self.init_pher = (1 / citiesNo)
         # IMPORTANCE OF TRAIL
         self.alpha = 1
-        # VISIBILITY MODELED BY THE INVERSE OF DISTANCE
+        # VISIBILITY
         self.beta = 3
         # EVAPORATION RATE
         self.rho = 0.1
@@ -29,6 +29,7 @@ class environment:
         self.q = 100
         # MAX ITERATIONS OF SIMULATION
         self.maxIterations = 250
+        self.elitistACO = 1
 
         # LIST OF ANTS
         self.ants = []
@@ -36,7 +37,6 @@ class environment:
         self.pheromoneMatrix = [[0 for x in range(citiesNo)] for y in range(citiesNo)]
         self.bestTourLength = 0
         self.bestIndex = 0
-        self.elitistACO = 1
 
 class ant:
 
@@ -45,44 +45,42 @@ class ant:
         self.currentCity = 0
         self.nextCity = 0
         self.pathIndex = 0
-        self.traversedCities = []
-        self.pathTaken = []
+        self.traversedCities = [0 for x in range(citiesNo)]
+        self.pathTaken = [-1 for x in range(citiesNo)]
         self.tourLength = 0
 
-def initializeSimulation(citiesNo):
+def initializeSimulation(environment, citiesNo):
 
-    thisCity = 0
     nextCity = 0
 
     # INITIALIZE ONE ANT ON EACH CITY
-    for ant in range(0, environment.colonySize):
-        if nextCity == environment.colonySize:
+    for initAnt in range(0, environment.colonySize):
+        nextCity += 1
+
+        if nextCity == citiesNo:
             nextCity = 0
 
-        (environment.ants[ant]).currentCity = nextCity + 1
+        (environment.ants).append(ant())
 
-        for city in range(0, citiesNo):
-            (environment.ants[ant]).traversedCities[thisCity] = 0
-            (environment.ants[ant]).pathTaken[thisCity] = -1
+        (environment.ants[initAnt]).currentCity = nextCity
 
-        (environment.ants[ant]).pathIndex = 1
-        (environment.ants[ant]).pathTaken[0] = (environment.ants[ant]).currentCity
-        (environment.ants[ant]).nextCity = -1
-        (environment.ants[ant]).tourLength = 0
+        (environment.ants[initAnt]).pathIndex = 1
+        (environment.ants[initAnt]).pathTaken[0] = (environment.ants[initAnt]).currentCity
+        (environment.ants[initAnt]).nextCity = -1
+        (environment.ants[initAnt]).tourLength = 0
 
         # LOAD FIRST CITY INTO TRAVERSED CITIES LIST
-        (environment.ants[ant]).traversedCities[(environment.ants[ant]).currentCity] = 1
+        (environment.ants[initAnt]).traversedCities[(environment.ants[initAnt]).currentCity] = 1
 
 
-def restartAnts(citiesNo):
+def restartAnts(environment, citiesNo):
 
     destination = 0
 
     for ant in range(0, environment.colonySize):
-        if (environment.ants[ant]).tourLength < bestTourLength:
-            global bestIndex
-            bestTourLength = (environment.ants[ant]).tourLength
-            bestIndex = ant
+        if (environment.ants[ant]).tourLength < environment.bestTourLength:
+            environment.bestIndex = ant
+            environment.bestTourLength = (environment.ants[ant]).tourLength
 
         (environment.ants[ant]).nextCity = -1
         (environment.ants[ant]).tourLength = 0
@@ -112,14 +110,13 @@ def chooseNextCity(ant, citiesNo, matrix):
     denominator = 0
     source = (environment.ants[ant]).currentCity
 
-    for destination in range(0, citiesNo):
-        if (environment.ants[ant]).traversedCities == 0:
-            denominator += antProduct(source, destination, matrix)
+    for city in range(0, citiesNo):
+        if (environment.ants[ant]).traversedCities[city] == 0:
+            denominator += antProduct(source, city, matrix)
 
     assert denominator != 0
 
     while True:
-        p = 0
         destination += 1
 
         if destination >= citiesNo:
@@ -139,13 +136,14 @@ def simulateAnts(citiesNo, matrix):
     moving = 0
 
     for ant in range(0, environment.colonySize):
+        # CHECK IF THERE ARE ANY MORE CITIES TO VISIT
         if ((environment.ants[ant]).pathIndex < citiesNo):
             (environment.ants[ant]).nextCity = chooseNextCity(ant, citiesNo, matrix)
             (environment.ants[ant]).traversedCities[(environment.ants[ant]).nextCity] = 1
             nextPathIndex = (environment.ants[ant]).pathIndex + 1
             (environment.ants[ant]).pathTaken[nextPathIndex] = (environment.ants[ant]).nextCity
 
-            (environment.ants[ant]).tourLength = matrix[(environment.ants[ant]).currentCity][(environment.ants[ant]).nextCity]
+            (environment.ants[ant]).tourLength += matrix[(environment.ants[ant]).currentCity][(environment.ants[ant]).nextCity]
 
             """ Go from last city to the first """
             if (environment.ants[ant]).pathIndex == citiesNo:
@@ -159,15 +157,18 @@ def simulateAnts(citiesNo, matrix):
 
 def updateTrails(citiesNo):
 
-    """ Pheromone evaporation """
+    flag = 0
+
+    # PHEROMONE EVAPORATION
     for source in range(0, citiesNo):
         for destination in range(0, citiesNo):
             if (source != destination):
                 environment.pheromoneMatrix[source][destination] *= (1.0 - environment.rho)
 
                 if environment.pheromoneMatrix[source][destination] < 0:
-                    environment.pheromoneMatrix[source][destination] = environment.pheromoneWeight
+                    environment.pheromoneMatrix[source][destination] = environment.init_pher
 
+    # ADD PHEROMONE TO THE TRAIL
     for ant in range(0, environment.colonySize):
         for city in range(0, citiesNo):
             if city < (citiesNo - 1):
@@ -178,16 +179,17 @@ def updateTrails(citiesNo):
                 destination = (environment.ants[ant]).pathTaken[0]
 
             for k in range(0, citiesNo):
-                if source == (environment.ants[bestIndex]).pathTaken[k] and destination == (environment.ants[bestIndex]).pathTaken[k+1]:
+                if source == (environment.ants[environment.bestIndex]).pathTaken[k] and destination == (environment.ants[environment.bestIndex]).pathTaken[k+1]:
                     flag = 1
 
                 if flag == 1:
+                    # ELITIST UPDATE
                     environment.pheromoneMatrix[source][destination] += ((environment.q) / (environment.ants[ant]).tourLength + (environment.q / environment.bestTourLength))
-                    environment.pheromoneMatrix[source][destination] = environment.pheromoneMatrix[source][destination]
+                    environment.pheromoneMatrix[destination][source] = environment.pheromoneMatrix[source][destination]
 
                 else:
                     environment.pheromoneMatrix[source][destination] += (environment.q / (environment.ants[ant]).tourLength)
-                    environment.pheromoneMatrix[source][destination] = environment.pheromoneMatrix[source][destination]
+                    environment.pheromoneMatrix[destination][source] = environment.pheromoneMatrix[source][destination]
 
     for source in range(0, citiesNo):
         for destination in range(0, citiesNo):
@@ -210,8 +212,8 @@ if __name__ == '__main__':
         # for i in range(0, len(matrix[0])):
         #     print(matrix[i])
 
-        environment(citiesNo)
-        initializeSimulation(citiesNo)
+        createEnv = environment(citiesNo)
+        initializeSimulation(createEnv, citiesNo)
 
         if simulateAnts(citiesNo) == 0:
             updateTrails(citiesNo)
