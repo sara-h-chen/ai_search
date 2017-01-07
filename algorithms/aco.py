@@ -34,7 +34,7 @@ class environment:
         # LIST OF ANTS
         self.ants = []
         # INITIALIZE GRAPH WITH PHEROMONES
-        self.pheromoneMatrix = [[0 for x in range(citiesNo)] for y in range(citiesNo)]
+        self.pheromoneMatrix = [[self.init_pher for x in range(citiesNo)] for y in range(citiesNo)]
         self.bestTourLength = 0
         self.bestIndex = 0
 
@@ -100,11 +100,14 @@ def restartAnts(environment, citiesNo):
         (environment.ants[ant]).traversedCities[(environment.ants[ant]).currentCity] = 1
 
 
-def antProduct(source, destination, matrix):
+def antProduct(source, destination, matrix, environment):
+    print(pow((environment.pheromoneMatrix)[source][destination], environment.alpha))
+    # TODO: FIND OUT WHY THIS RETURNS ZERO DIVISION ERROR
+    print(pow((1.0 / (matrix[source][destination])), environment.beta))
     return (pow((environment.pheromoneMatrix)[source][destination], environment.alpha) * pow((1.0 / (matrix[source][destination])), environment.beta))
 
 
-def chooseNextCity(ant, citiesNo, matrix):
+def chooseNextCity(ant, citiesNo, matrix, environment):
 
     destination = 0
     denominator = 0
@@ -112,10 +115,11 @@ def chooseNextCity(ant, citiesNo, matrix):
 
     for city in range(0, citiesNo):
         if (environment.ants[ant]).traversedCities[city] == 0:
-            denominator += antProduct(source, city, matrix)
+            denominator += antProduct(source, city, matrix, environment)
 
     assert denominator != 0
 
+    # ROULETTE TO RANDOMLY CHOOSE A CITY TO GO TO NEXT
     while True:
         destination += 1
 
@@ -123,7 +127,7 @@ def chooseNextCity(ant, citiesNo, matrix):
             destination = 0
 
         if (environment.ants[ant]).traversedCities[destination] == 0:
-            p = (antProduct(source, destination, matrix)) / denominator
+            p = (antProduct(source, destination, matrix, environment)) / denominator
             x = random.random()
             if (x < p):
                 break
@@ -131,14 +135,14 @@ def chooseNextCity(ant, citiesNo, matrix):
     return destination
 
 
-def simulateAnts(citiesNo, matrix):
+def simulateAnts(citiesNo, matrix, environment):
 
     moving = 0
 
     for ant in range(0, environment.colonySize):
         # CHECK IF THERE ARE ANY MORE CITIES TO VISIT
         if ((environment.ants[ant]).pathIndex < citiesNo):
-            (environment.ants[ant]).nextCity = chooseNextCity(ant, citiesNo, matrix)
+            (environment.ants[ant]).nextCity = chooseNextCity(ant, citiesNo, matrix, environment)
             (environment.ants[ant]).traversedCities[(environment.ants[ant]).nextCity] = 1
             nextPathIndex = (environment.ants[ant]).pathIndex + 1
             (environment.ants[ant]).pathTaken[nextPathIndex] = (environment.ants[ant]).nextCity
@@ -204,6 +208,7 @@ if __name__ == '__main__':
     dir_path = os.path.abspath(os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), 'input'))
     inputFiles = parser.get_input_files()
     for file in inputFiles:
+        # DEAL WITH PARSING OF MATRIX
         dir = os.path.join(dir_path, file)
         queue = parser.read_file(dir)
         citiesNo = parser.next_number(queue)
@@ -212,9 +217,15 @@ if __name__ == '__main__':
         # for i in range(0, len(matrix[0])):
         #     print(matrix[i])
 
+        # BEGIN THE ACO ALGORITHM
         createEnv = environment(citiesNo)
         initializeSimulation(createEnv, citiesNo)
 
-        if simulateAnts(citiesNo) == 0:
+        # currentIteration = 0
+        # while currentIteration < environment.maxIterations:
+        #     currentIteration += 1
+        #     if simulateAnts()
+
+        if simulateAnts(citiesNo, matrix, createEnv) == 0:
             updateTrails(citiesNo)
-            restartAnts(citiesNo)
+            restartAnts(createEnv, citiesNo)
