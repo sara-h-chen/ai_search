@@ -1,0 +1,4 @@
+NAME = AISearchtestcase,
+TOURSIZE = 8,
+LENGTH = 28,
+3, 2, 1, 8, 7, 6, 5, 4

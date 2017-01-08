@@ -5,7 +5,6 @@ import sys, os
 #                 PRE-PROCESS DATA GIVEN IN TOUR                     #
 ######################################################################
 
-
 def read_file(filename):
     file = open(filename)
 
@@ -43,9 +42,9 @@ def get_current_node(row, col, matx):
     return matx[row][col]
 
 
-def get_input_files():
+def get_input_files(folder_url):
     # GETS THE FOLDER WITH ALL INPUT FILES
-    dir_path = os.path.abspath(os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), 'input'))
+    dir_path = os.path.abspath(os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), folder_url))
 
     # LISTS ALL THE FILES IN THE FOLDER
     allFiles = [f for f in os.listdir(dir_path) if os.path.isfile(os.path.join(dir_path, f))]
