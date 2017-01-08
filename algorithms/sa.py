@@ -137,11 +137,11 @@ def pretty_print(matrix):
 
 if __name__ == '__main__':
     in_dir_path = os.path.abspath(os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), 'input'))
-    out_dir_path = os.path.abspath(os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), 'output'))
+    out_dir_path = os.path.abspath(os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), 'TourfileA'))
     inputFiles = parser.get_input_files('input')
     for file in inputFiles:
         input_url = os.path.join(in_dir_path, file)
-        output_url = os.path.join(out_dir_path, "file" + file)
+        output_url = os.path.join(out_dir_path, "tour" + file)
         queue = parser.read_file(input_url)
         citiesNo = parser.next_number(queue)
         matrix = [[0 for x in range(citiesNo)] for y in range(citiesNo)]

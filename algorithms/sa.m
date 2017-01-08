@@ -1,4 +1,4 @@
-% Solution of the traveling salesman problem by simulated anealing
+% Solution of the traveling salesman problem by simulated annealing
 % location of the cities
 l = 10; d = l.ˆ2;
 cities = zeros(d,2);

@@ -19,7 +19,7 @@ def pretty_print(matrix):
     table = [fmt.format(*row) for row in s]
     f.write('\n'.join(table))
 
-f = open("reformated.txt", "w")
+f = open("reformatted.txt", "w")
 
 if __name__ == '__main__':
     dir_path = os.path.abspath(os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), 'input'))
