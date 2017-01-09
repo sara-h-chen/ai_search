@@ -43,7 +43,7 @@ class Ant:
         self.tour.append(self.currentCity)
         self.remaining_cities.remove(self.currentCity)
 
-    def calculate_proabilities(self, rouletteWheel, cityProbabilities):
+    def calculate_probabilities(self, rouletteWheel, cityProbabilities):
         current_pheromone = self.pheromone_matrix.matrix[self.currentCity]
         current_beta_row= self.beta_matrix[self.currentCity]
         for cityIndex in self.remaining_cities:
@@ -58,7 +58,7 @@ class Ant:
             rouletteWheel += cityProbabilities[cityIndex]
         return rouletteWheel, cityProbabilities
 
-    def pick_from_proabilities(self, rouletteWheel, cityProbabilities):
+    def pick_from_probabilities(self, rouletteWheel, cityProbabilities):
         wheelTarget = rouletteWheel * random.random()
         wheelPosition = 0.0
         for cityIndex in self.remaining_cities:
@@ -76,8 +76,8 @@ class Ant:
         rouletteWheel = 0.0
         cityProbabilities = [0] * self.graph_size
 
-        rouletteWheel, cityProbabilities = self.calculate_proabilities(rouletteWheel, cityProbabilities)
-        self.pick_from_proabilities(rouletteWheel, cityProbabilities)
+        rouletteWheel, cityProbabilities = self.calculate_probabilities(rouletteWheel, cityProbabilities)
+        self.pick_from_probabilities(rouletteWheel, cityProbabilities)
 
     def tourFound(self):
         if self.tour == None:

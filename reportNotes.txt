@@ -1,8 +1,20 @@
-To get the best results for both algorithms, each algorithm was run 5 times.
+To get the best results for both algorithms, each algorithm was run multiple times. Due to the long time that it takes for simulated annealing to return results, the SA algorithm was run only 5 times. Being quicker, and having more variables to experiment with, more time was spent experimenting with ant colony optimization.
 
 ##################### ANT COLONY OPTIMIZATION -- THIS IS TOUR B ###############################
 
-EXPLAIN WHAT PHEROMONES ARE 
+http://people.idsia.ch/~luca/ij_23-alife99.pdf
+Dorigo, M., Gianni D.C, Gambardella, L.M.: Ant Algorithms for Discrete Optimization
+
+The ant colony optimization algorithm was inspired by the foraging behavior of ant colonies and a simple form of indirect communication called 'stigmergy', mediated by the laying of pheromone trails. Although they start off in random directions, ants deposit a substance called pheromones on the ground while walking along paths between the nest and food sources, once they have found a source. This trail allows the ants to find their way back to the food source, but it also leads other ants to the food source. This eventually leads to the emergence of shortest paths as there exists a positive feedback mechanism in which a tour through the shorter path is quicker to complete and this leads to pheromone reinforcement more quickly. This leads to more ants using the shorter path; the convergence here directs the search. However, caution has to be taken when implementing this as an algorithm, as premature convergence (stagnation) may occur and lead to convergence on locally optimum routes. As such, the pheromone trails are 'evaporated' and recomputed to counter such situations.
+
+In the algorithm, the amount of pheromone deposited is made proportional to how well the solution that has been built is. As such, the better the quality of the solution, the more pheromone is deposited on a route, making it more attractive in further iterations.
+
+Advantages: Can be used in dynamic applications, as pheromone trails adapt to any changes in the tour. As this is a probabilistic algorithm, depending on the amount of time that the simulation is run for, the solutions may differ. This is because the time taken for convergence, along with the quality of the soluiton, cannot be guaranteed. This differs from algorithms like the 3/2 approximation algorithm proposed by Christofides in 1976, which guarantees that a path of at most 1.5 times of the optimal will be returned.
+
+Experimentation in colony size and number of iterations. The tradeoff lies in the amount of time that it takes to complete the algorithm. Experimentation also with alpha, beta and rho - but the values 1, 5 and 0.5 were experimentally found to be good by Dorigo himself. Beginning with a lower value for beta and rho have yielded quicker, good solutions for sets with small cities. However, the smaller the value of rho, i.e. the slower the evaporation rate, the slower the algorithm runs. Increasing this value leads to better solutions for the larger sets, but less optimal results with the smaller sets. The best results from the experimentation with different values for beta, rho, and number of iterations are shown in Fig. Increasing the colony size would lead to slower computation, as the time taken for the algorithm scales linearly to the number of ants.
+
+-------------- OPTIMIZATION ------------------
+
 Total Execution
 
 1 second spent updating pheromones - You don't want to optimize the laying of pheromones 
@@ -14,10 +26,6 @@ beta_component is exponentiation and this takes a long time to compute, so you n
 
 Alpha and beta are real parameters whose values determine the relative importance: alpha controls the influence of the amount of pheromone on a trail and beta controls the influence of the heuristic information (the desirability of the edge, 1/d). Pheromones are evaporated from the trail on every iteration. As ants pick the edges and traverse them, they lay more pheromones, edges that have had no ants traverse them will then have less and less pheromones.
 
-Advantages: Can be used in dynamic applications; however, the algorithm, being probabilistic, will change by iteration. As such, the time to converge, along with the quality of the soluiton, cannot be guaranteed, unlike the 3/2 approximation algorithm proposed by Christofides in 1976.
-
-Experimentation in colony size and number of iterations.
-
 ######################### SIMULATED ANNEALING -- THIS IS TOUR A ############################
 
 Experimentation is in the cooling schedule. Using a geometric cooling schedule
@@ -25,14 +33,15 @@ Experimentation is in the cooling schedule. Using a geometric cooling schedule
 http://www.fys.ku.dk/~andresen/BAhome/ownpapers/permanents/annealSched.pdf
 SA is time-consuming due to efforts to not be caught in local minima.
 
+The cooling schedule is a slowly decreasing function which makes the swapping of edges less likely as time goes on, unless the tour has a shorter length after swapping, making it more difficult for the algorithm to escape a local minimum.
+
 Fred W. Glover, Gary A. Kochenberger - 2003; Springer Science & Business Media: Handbook of Metaheuristics
 Tried to experiment with different cooling schedules -- geometric vs linear, however, experiments by Strenski and Kirkpatrick (1991) show that there is no measurable performance differences between linear and geometric ooling schedules. However, geometric cooling schedules are not greatly affected by excessively high initial temperatures and thus should be used particularly in such cases. Ultimately, it has been conjectured that the neighbourhood and the corresponding topology of objective functions that are responsible for the behavior of the simulated annealing algorithm, as the effectiveness of cooling schedules can only be compared through experimentation.
+
+------------- OPTIMIZATION ----------------
 
 EXPLAIN WHAT 3-OPT IS
 You modify the graph at each iteration and if it improves the results then you take the new one; otherwise, use the non-increasing function to decide if you should accept these changes. This is a slight modification to the usual simulated annealing algorithm which chooses a random neighbour and then decides if the algorithm should choose to move to this neighbour (which yields a worse solution) to break out of the local optimum.
 http://ac.els-cdn.com/0360835291901653/1-s2.0-0360835291901653-main.pdf?_tid=6bb317d0-d5bd-11e6-96ce-00000aacb361&acdnat=1483892201_920514fe777cbbe2fcb66b4a169d90bf
 Alfa A.S, Heragu S.S., Chen M. (1991): A 3-Opt Based Simulated Annealing Algorithm for Vehicle Routing Problems
-3-opt method is a link exchange algorithm, which is used in this implementation of the TSP. Find a feasible tour, select any three links on this tour and replace them with any other three links not in the tour, but which would improve the cost of the tour. The solution is then obtained when an improved solution cannot be generated by replacing three links in the tour with three others not yet in the tour. However, the 3-opt version of simulated annealing is unable to outperform the Lin-Kernighan heuristic, which is a generalization of the 3-opt based on k-opt transitions, with k being decided dynamically
-
-The cooling schedule is a slowly decreasing function which makes the swapping of edges less likely as time goes on, unless the tour has a shorter length after swapping, making it more difficult for the algorithm to escape a local minimum.
-
+3-opt method is a link exchange algorithm, which is used in this implementation of the TSP. Find a feasible tour, select any three links on this tour and replace them with any other three links not in the tour, but which would improve the cost of the tour. The solution is then obtained when an improved solution cannot be generated by replacing three links in the tour with three others not yet in the tour. However, the 3-opt version of simulated annealing is unable to outperform the Lin-Kernighan heuristic, which is a generalization of the 3-opt based on k-opt transitions, with k being decided dynamically.
