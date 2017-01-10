@@ -3,8 +3,6 @@
 # ---------------------------------------------------------------- #
 # REFERENCE: http://www.theprojectspot.com/tutorial-post/          #
 #            ant-colony-optimization-for-hackers/10                #
-#            https://ameyajoshi005.wordpress.com/2012/11/10/       #
-#            the-traveling-salesman-problem-using-ant-algorithms/  #
 ####################################################################
 
 import parser
@@ -163,12 +161,15 @@ class AntColony:
             self.step()
     
     def step(self):
+        # RESTART ANTS AT BEGINNING POSITION
         self.resetAnts()
 
         for antIndex in range(len(self.colony)):
+            # RUN INDIVIDUAL ANTS (REFER TO ANT CLASS)
             self.colony[antIndex].run()
 
         self.getGlobalBest()
+        # AFTER ALL ANTS HAVE COMPLETE TOURS, ADD PHEROMONES
         self.updatePheromone()
         # pretty_print(self.pheromone_matrix.matrix)
 
@@ -211,6 +212,7 @@ class AntColony:
         return self.iterationBest
 
     def getGlobalBest(self):
+        # FIND THE BEST RESULTS ACROSS ALL ANTS
         bestAnt = self.getIterationBest()
         if bestAnt == None and self.globalBest == None:
             return None
@@ -222,6 +224,7 @@ class AntColony:
         return self.globalBest
 
 def aco(distance_matrix):
+    # ALGORITHM BEGINS HERE
     ac = AntColony(distance_matrix)
     ac.run()
     bestAnt = ac.getGlobalBest()
